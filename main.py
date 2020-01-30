@@ -15,7 +15,7 @@ class ExecuteModel:
       self.seq_len = 160
       self.hidden_dim = 128
       self.char_embedding_size = 300
-      self.batch_size = 128
+      self.batch_size = 12
       
    @staticmethod
    def data_split(text, target):
@@ -66,36 +66,38 @@ class ExecuteModel:
             y = torch.from_numpy(y_train[i*self.batch_size:(i+1)*self.batch_size]).type(torch.FloatTensor)
             
             optimizer.zero_grad()
+            
             output = net(x, hc)
-            loss = criterion(output, y)
+
+            loss = F.binary_cross_entropy(output, y)
             loss.backward()
          
             optimizer.step()
             
          # feedback every 10 epochs
-         if epoch % 10 == 0: 
-            with torch.no_grad():
-               net.eval()
-               acc = list()
-               
-               # initialize the validation hidden state and cell state
-               test_h, test_c = net.init_hidden()
+         if epoch % 1 == 0: 
+            #with torch.no_grad():
+            net.eval()
+            acc = list()
             
-               for j in range(int(len(x_test)/self.batch_size)):
-                     
-                     xt = self.char_to_embedding(prepData.dictionary, x_test[j*self.batch_size:(j+1)*self.batch_size])
-                     xt = np.reshape(xt, (xt.shape[1], self.batch_size, xt.shape[2]))
-                     
-                     xt = torch.from_numpy(xt).type(torch.FloatTensor)
-                     yt = torch.from_numpy(y_test[j*self.batch_size:(j+1)*self.batch_size]).type(torch.FloatTensor)
-                     
-                     test_output = net(xt, (test_h, test_c))
-                     test_loss = criterion(test_output, yt)
-                     acc.append(accuracy_score(yt, test_output))
-            
-               print("Epoch: {}, Batch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}, Acc Test: {:.4f}".format(epoch, i, loss.item(), test_loss.item(), sum(acc)/len(acc)))
+            # initialize the validation hidden state and cell state
+            test_hc = net.init_hidden()
+            for j in range(int(len(x_test)/self.batch_size)):
+                  
+                  xt = self.char_to_embedding(prepData.dictionary, x_test[j*self.batch_size:(j+1)*self.batch_size])
+                  xt = np.reshape(xt, (xt.shape[1], self.batch_size, xt.shape[2]))
+                  
+                  xt = torch.from_numpy(xt).type(torch.FloatTensor)
+                  yt = torch.from_numpy(y_test[j*self.batch_size:(j+1)*self.batch_size]).type(torch.FloatTensor)
+                  
+                  test_output = net(xt, test_hc)
+                  test_loss = F.binary_cross_entropy(test_output, yt)
+                  
+                  acc.append(accuracy_score(yt, test_output))
+         
+            print("Epoch: {}, Batch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}, Acc Test: {:.4f}".format(epoch, i, loss.item(), test_loss.item(), sum(acc)/len(acc)))
 
-   
+
 
 if __name__ == "__main__":
    

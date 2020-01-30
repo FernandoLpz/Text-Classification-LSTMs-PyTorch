@@ -34,7 +34,7 @@ class SiameseNet(nn.ModuleList):
          h_2, c_2 = hc_2
    
       output = self.fc(self.dropout(h_2))
-      output = F.relu(output)
+      output = F.sigmoid(output)
 
       return output
    
