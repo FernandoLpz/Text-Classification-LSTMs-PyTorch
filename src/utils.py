@@ -1,5 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+
+from sklearn.model_selection import train_test_split
+
 plt.style.use('seaborn-white')
 
 class PrepareData:
@@ -10,6 +14,9 @@ class PrepareData:
       self.test_text = list()
       
       pass
+   @staticmethod
+   def data_split(text, target):
+      return train_test_split(text, target, test_size=0.20, random_state=42)
    
    @staticmethod
    def remove_spaces(sentence, dictionary):
@@ -18,6 +25,19 @@ class PrepareData:
       sentence = [s for s in sentence if s in dictionary.keys()]
       
       return sentence
+
+   @staticmethod
+   def char_to_embedding(dictionary, sentences, sentence_embedded):
+      
+      i = 0
+      for sentence in sentences:
+         j = 0
+         for char in sentence:
+            sentence_embedded[i][j] = dictionary[char]
+            j+=1
+         i+=1
+
+      return sentence_embedded   
    
    def data_analitics(self):
       train_data = pd.read_csv('data/train.csv', delimiter=',')
