@@ -19,8 +19,6 @@ class SiameseNet(nn.ModuleList):
       self.fc = nn.Linear(in_features=self.hidden_dim, out_features=1)
       
    def forward(self, x, hc):
-      
-      output_seq = torch.empty((self.sequence_len, self.batch_size, self.vocab_size))
 
       hc_1, hc_2 = hc, hc
       
@@ -32,11 +30,10 @@ class SiameseNet(nn.ModuleList):
          
          hc_2 = self.lstm_2(h_1, hc_2)
          h_2, c_2 = hc_2
-   
-      output = self.fc(self.dropout(h_2))
-      output = F.sigmoid(output)
+      
+      out = F.leaky_relu(self.fc(self.dropout(h_2)))
 
-      return output
+      return out
    
    def init_hidden(self):
       return (torch.zeros(self.batch_size, self.hidden_dim), torch.zeros(self.batch_size, self.hidden_dim))

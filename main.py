@@ -15,7 +15,7 @@ class ExecuteModel:
       self.seq_len = 160
       self.hidden_dim = 128
       self.char_embedding_size = 300
-      self.batch_size = 12
+      self.batch_size = 128
       
    @staticmethod
    def data_split(text, target):
@@ -70,15 +70,13 @@ class ExecuteModel:
             output = net(x, hc)
 
             loss = F.binary_cross_entropy(output, y)
+            
             loss.backward()
          
             optimizer.step()
             
          # feedback every 10 epochs
-         if epoch % 1 == 0: 
-            #with torch.no_grad():
-            net.eval()
-            acc = list()
+         if epoch % 2 == 0: 
             
             # initialize the validation hidden state and cell state
             test_hc = net.init_hidden()
@@ -93,9 +91,8 @@ class ExecuteModel:
                   test_output = net(xt, test_hc)
                   test_loss = F.binary_cross_entropy(test_output, yt)
                   
-                  acc.append(accuracy_score(yt, test_output))
          
-            print("Epoch: {}, Batch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}, Acc Test: {:.4f}".format(epoch, i, loss.item(), test_loss.item(), sum(acc)/len(acc)))
+            print("Epoch: {}, Batch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}".format(epoch, i, loss.item(), test_loss.item()))
 
 
 
