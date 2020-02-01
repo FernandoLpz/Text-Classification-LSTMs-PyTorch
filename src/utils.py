@@ -8,36 +8,24 @@ plt.style.use('seaborn-white')
 
 class PrepareData:
    def __init__(self):
-      self.dictionary = self.build_dictionary()
-      self.train_text = list()
-      self.target = list()
-      self.test_text = list()
-      
-      pass
-   @staticmethod
-   def data_split(text, target):
-      return train_test_split(text, target, test_size=0.20, random_state=42)
+      self.build_dictionary()
+      self.data_analitics()
+      self.train_test_split_()
    
-   @staticmethod
-   def remove_spaces(sentence, dictionary):
-      #restricted = [' ', '\n', '\x89', 'Û', 'ª','å','Ê','Ò','Ï','¢','Ó','÷','\x9d','¤']
+      pass
+   
+   def build_dictionary(self):
       
-      sentence = [s for s in sentence if s in dictionary.keys()]
+      self.dictionary = dict()
       
-      return sentence
-
-   @staticmethod
-   def char_to_embedding(dictionary, sentences, sentence_embedded):
+      with open('data/char_embeddigns.txt','r') as f:
+         file = f.readlines()
       
-      i = 0
-      for sentence in sentences:
-         j = 0
-         for char in sentence:
-            sentence_embedded[i][j] = dictionary[char]
-            j+=1
-         i+=1
-
-      return sentence_embedded   
+      for item in file:
+         item = item.strip().split()
+         self.dictionary[item[0]] = item[1:]
+         
+      pass
    
    def data_analitics(self):
       train_data = pd.read_csv('data/train.csv', delimiter=',')
@@ -72,15 +60,36 @@ class PrepareData:
       self.train_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.train_text]
       self.test_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.test_text]
       
-   def build_dictionary(self):
+      pass
       
-      dictionary = dict()
+   
+   def train_test_split_(self):
+      self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.train_text, self.target, test_size=0.20, random_state=42)
       
-      with open('data/char_embeddigns.txt','r') as f:
-         file = f.readlines()
+      self.y_train = np.array(self.y_train)
+      self.y_test = np.array(self.y_test)
       
-      for item in file:
-         item = item.strip().split()
-         dictionary[item[0]] = item[1:]
-         
-      return dictionary
+      self.y_train = np.reshape(self.y_train, (self.y_train.shape[0], 1))
+      self.y_test = np.reshape(self.y_test, (self.y_test.shape[0], 1))
+      
+      pass
+   
+   @staticmethod
+   def remove_spaces(sentence, dictionary):
+      sentence = [s for s in sentence if s in dictionary.keys()]
+      
+      return sentence
+
+   @staticmethod
+   def char_to_embedding(dictionary, sentences, sentence_embedded):
+      
+      i = 0
+      for sentence in sentences:
+         j = 0
+         for char in sentence:
+            sentence_embedded[i][j] = dictionary[char]
+            j+=1
+         i+=1
+
+      return sentence_embedded   
+   
