@@ -31,7 +31,7 @@ class SiameseNet(nn.ModuleList):
          hc_2 = self.lstm_2(h_1, hc_2)
          h_2, c_2 = hc_2
       
-      out = F.leaky_relu(self.fc(self.dropout(h_2)))
+      out = F.relu(self.fc(self.dropout(h_2)))
 
       return out
    

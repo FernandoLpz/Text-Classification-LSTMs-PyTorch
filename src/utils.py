@@ -78,18 +78,5 @@ class PrepareData:
    def remove_spaces(sentence, dictionary):
       sentence = [s for s in sentence if s in dictionary.keys()]
       
-      return sentence
-
-   @staticmethod
-   def char_to_embedding(dictionary, sentences, sentence_embedded):
-      
-      i = 0
-      for sentence in sentences:
-         j = 0
-         for char in sentence:
-            sentence_embedded[i][j] = dictionary[char]
-            j+=1
-         i+=1
-
-      return sentence_embedded   
+      return sentence 
    
