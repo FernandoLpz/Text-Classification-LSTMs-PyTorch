@@ -8,6 +8,7 @@ import torch.nn.functional as F
 
 import numpy as np
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import roc_auc_score
 
 class ExecuteModel:
    def __init__(self, data):
@@ -38,18 +39,38 @@ class ExecuteModel:
 
       return sentence_embedded  
    
-   
+   def prediction(self):
+      self.net.eval()
+      
+      val_hc = self.net.init_hidden()
+      auc_scores = list()
+      with torch.no_grad():
+         
+         for i in range(int(len(self.x_test)/self.batch_size)):
+            xval = self.char_to_embedding(self.x_test[i*self.batch_size:(i+1)*self.batch_size])
+            xval = np.reshape(xval, (xval.shape[1], self.batch_size, xval.shape[2]))
+            
+            xval = torch.from_numpy(xval).type(torch.FloatTensor)
+            yval = torch.from_numpy(self.y_test[i*self.batch_size:(i+1)*self.batch_size]).type(torch.FloatTensor)
+            
+            y_pred = self.net(xval, val_hc)
+            
+            auc_scores.append(roc_auc_score(yval, y_pred))
+            
+         auc = sum(auc_scores) / len(auc_scores)
+      
+      return auc
       
    def init_train(self):
    
-      net = SiameseNet(sequence_len=self.seq_len, vocab_size=self.char_embedding_size, hidden_dim=self.hidden_dim, batch_size=self.batch_size)
+      self.net = SiameseNet(sequence_len=self.seq_len, vocab_size=self.char_embedding_size, hidden_dim=self.hidden_dim, batch_size=self.batch_size)
 
-      optimizer = optim.Adam(net.parameters(), lr=0.001)
+      optimizer = optim.Adam(self.net.parameters(), lr=0.001)
       
       for epoch in range(10):
-         net.train()
+         self.net.train()
          
-         hc = net.init_hidden()
+         hc = self.net.init_hidden()
          
          for i in range(int(len(self.x_train)/self.batch_size)):
             
@@ -61,7 +82,7 @@ class ExecuteModel:
             
             optimizer.zero_grad()
             
-            output = net(x, hc)
+            output = self.net(x, hc)
 
             loss = F.binary_cross_entropy(output, y)
             
@@ -69,22 +90,25 @@ class ExecuteModel:
          
             optimizer.step()
             
-         if epoch % 2 == 0: 
+         if epoch % 1 == 0: 
             
-            test_hc = net.init_hidden()
+            test_hc = self.net.init_hidden()
             
             for j in range(int(len(self.x_test)/self.batch_size)):
-                  
+               
                xt = self.char_to_embedding(self.x_test[j*self.batch_size:(j+1)*self.batch_size])
                xt = np.reshape(xt, (xt.shape[1], self.batch_size, xt.shape[2]))
                
                xt = torch.from_numpy(xt).type(torch.FloatTensor)
                yt = torch.from_numpy(self.y_test[j*self.batch_size:(j+1)*self.batch_size]).type(torch.FloatTensor)
                
-               test_output = net(xt, test_hc)
-               test_loss = F.binary_cross_entropy(test_output, yt)
+               test_output = self.net(xt, test_hc)
                
-            print("Epoch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}".format(epoch, loss.item(), test_loss.item()))
+               test_loss = F.binary_cross_entropy(test_output, yt)
+            
+            auc = self.prediction()
+               
+            print("Epoch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}, AUC: {:.6f}".format(epoch, loss.item(), test_loss.item(), auc))
 
 
 if __name__ == "__main__":
