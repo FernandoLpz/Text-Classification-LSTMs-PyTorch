@@ -11,29 +11,37 @@ class SiameseNet(nn.ModuleList):
       self.batch_size = kwargs['batch_size']
       self.sequence_len = kwargs['sequence_len']
       self.vocab_size = kwargs['vocab_size']
+      self.LSTM_layers = kwargs['LSTM_layers']
       
-      self.lstm_1 = nn.LSTMCell(input_size=self.vocab_size, hidden_size=self.hidden_dim)
-      self.lstm_2 = nn.LSTMCell(input_size=self.hidden_dim, hidden_size=self.hidden_dim)
+      self.lstm = nn.LSTM(input_size=self.vocab_size, 
+                          hidden_size=self.hidden_dim, 
+                          num_layers=self.LSTM_layers,
+                          dropout=0.2)
+      
       self.dropout = nn.Dropout(p=0.5)
-      
       self.fc = nn.Linear(in_features=self.hidden_dim, out_features=1)
       
    def forward(self, x, hc):
 
-      hc_1, hc_2 = hc, hc
+      # out: tensor of shape [seq_len, batch_size, hidden_dim]. This tensor contains all the outputs
+      # for each LSTM cell
+      # hidden: tuple which contains (all hidden states, all current states)
+      out, hidden = self.lstm(x, hc)
       
-      # for every time step in the sequence
-      for t in range(self.sequence_len):
-         
-         hc_1 = self.lstm_1(x[t], hc_1)
-         h_1, c_1 = hc_1
-         
-         hc_2 = self.lstm_2(h_1, hc_2)
-         h_2, c_2 = hc_2
+      # We take the last output, we do not care the previous outputs
+      out = out[-1, :, :]
       
-      out = F.relu(self.fc(self.dropout(h_2)))
+      # Feed Forward Neural Net with relu as activation function
+      out = F.relu(self.fc(self.dropout(out)))
 
       return out
    
    def init_hidden(self):
-      return (torch.zeros(self.batch_size, self.hidden_dim), torch.zeros(self.batch_size, self.hidden_dim))
+      # Initialization of hidden staes
+      # It is needed a tuple, element [0] is about hidden states
+      # element [1] is about current states
+      # In case of using nn.LSTM, the hidden and current state must be defined as: [LSTM_layers, batch_size, hidden_dim]
+      # IN case of using nn.LSTMCell, hidden and current state must be defined as: [batch_size, hidden_dim]
+      
+      return (torch.zeros(self.LSTM_layers, self.batch_size, self.hidden_dim), 
+              torch.zeros(self.LSTM_layers, self.batch_size, self.hidden_dim))

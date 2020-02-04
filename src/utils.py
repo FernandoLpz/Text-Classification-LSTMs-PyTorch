@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 
 plt.style.use('seaborn-white')
@@ -25,6 +26,21 @@ class PrepareData:
          item = item.strip().split()
          self.dictionary[item[0]] = item[1:]
          
+      embeddings = list()
+      for emb in self.dictionary.values():
+         embeddings.append(emb)
+         
+      embeddings = np.array(embeddings)
+      
+      pca = PCA(n_components=32)
+      embeddings = pca.fit_transform(embeddings)
+      
+      i=0
+      for char in self.dictionary.keys():
+         self.dictionary[char] = embeddings[i]
+         i+=1
+         
+      
       pass
    
    def data_analitics(self):

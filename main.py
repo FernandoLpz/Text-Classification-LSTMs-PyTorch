@@ -21,9 +21,10 @@ class ExecuteModel:
       self.dictionary = data.dictionary
       
       self.seq_len = 160
-      self.hidden_dim = 128
-      self.char_embedding_size = 300
-      self.batch_size = 128
+      self.hidden_dim = 64
+      self.char_embedding_size = 32
+      self.batch_size = 64
+      self.LSTM_layers = 4
       
    def char_to_embedding(self, sentences):
       
@@ -63,7 +64,11 @@ class ExecuteModel:
       
    def init_train(self):
    
-      self.net = SiameseNet(sequence_len=self.seq_len, vocab_size=self.char_embedding_size, hidden_dim=self.hidden_dim, batch_size=self.batch_size)
+      self.net = SiameseNet(sequence_len=self.seq_len, 
+                            vocab_size=self.char_embedding_size, 
+                            hidden_dim=self.hidden_dim, 
+                            batch_size=self.batch_size,
+                            LSTM_layers=self.LSTM_layers)
 
       optimizer = optim.Adam(self.net.parameters(), lr=0.001)
       
