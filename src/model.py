@@ -16,10 +16,10 @@ class SiameseNet(nn.ModuleList):
       self.lstm = nn.LSTM(input_size=self.vocab_size, 
                           hidden_size=self.hidden_dim, 
                           num_layers=self.LSTM_layers,
-                          dropout=0.2)
+                          dropout=0.1)
       
-      self.dropout = nn.Dropout(p=0.5)
-      self.fc = nn.Linear(in_features=self.hidden_dim, out_features=1)
+      self.dropout = nn.Dropout(p=0.1)
+      self.fc_1 = nn.Linear(in_features=self.hidden_dim, out_features=1)
       
    def forward(self, x, hc):
 
@@ -32,8 +32,10 @@ class SiameseNet(nn.ModuleList):
       out = out[-1, :, :]
       
       # Feed Forward Neural Net with relu as activation function
-      out = F.relu(self.fc(self.dropout(out)))
-
+      # out = F.relu(self.fc(self.dropout(out)))
+      
+      out = F.relu(self.fc_1(out))
+      
       return out
    
    def init_hidden(self):
@@ -43,5 +45,5 @@ class SiameseNet(nn.ModuleList):
       # In case of using nn.LSTM, the hidden and current state must be defined as: [LSTM_layers, batch_size, hidden_dim]
       # IN case of using nn.LSTMCell, hidden and current state must be defined as: [batch_size, hidden_dim]
       
-      return (torch.zeros(self.LSTM_layers, self.batch_size, self.hidden_dim), 
-              torch.zeros(self.LSTM_layers, self.batch_size, self.hidden_dim))
+      return (torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim), 
+              torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim))

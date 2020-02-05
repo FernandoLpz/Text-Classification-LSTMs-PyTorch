@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import re
 
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
@@ -32,7 +33,7 @@ class PrepareData:
          
       embeddings = np.array(embeddings)
       
-      pca = PCA(n_components=32)
+      pca = PCA(n_components=64)
       embeddings = pca.fit_transform(embeddings)
       
       i=0
@@ -92,7 +93,9 @@ class PrepareData:
    
    @staticmethod
    def remove_spaces(sentence, dictionary):
-      sentence = [s for s in sentence if s in dictionary.keys()]
+      
+      simbols = ['!','@','#','/','\\','-','_',':',',','''''']
+      sentence = [s.lower() for s in sentence if s in dictionary.keys() and s not in simbols]
       
       return sentence 
    

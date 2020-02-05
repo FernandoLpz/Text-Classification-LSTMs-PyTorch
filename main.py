@@ -21,10 +21,10 @@ class ExecuteModel:
       self.dictionary = data.dictionary
       
       self.seq_len = 160
-      self.hidden_dim = 64
-      self.char_embedding_size = 32
+      self.hidden_dim = 32
+      self.char_embedding_size = 64
       self.batch_size = 64
-      self.LSTM_layers = 4
+      self.LSTM_layers = 2
       
    def char_to_embedding(self, sentences):
       
@@ -70,9 +70,9 @@ class ExecuteModel:
                             batch_size=self.batch_size,
                             LSTM_layers=self.LSTM_layers)
 
-      optimizer = optim.Adam(self.net.parameters(), lr=0.001)
+      optimizer = optim.Adam(self.net.parameters(), lr=0.01)
       
-      for epoch in range(10):
+      for epoch in range(100):
          self.net.train()
          
          hc = self.net.init_hidden()
@@ -95,7 +95,7 @@ class ExecuteModel:
          
             optimizer.step()
             
-         if epoch % 1 == 0: 
+         if epoch % 5 == 0: 
             
             test_hc = self.net.init_hidden()
             
