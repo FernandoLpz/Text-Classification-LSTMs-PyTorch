@@ -45,5 +45,5 @@ class SiameseNet(nn.ModuleList):
       # In case of using nn.LSTM, the hidden and current state must be defined as: [LSTM_layers, batch_size, hidden_dim]
       # IN case of using nn.LSTMCell, hidden and current state must be defined as: [batch_size, hidden_dim]
       
-      return (torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim), 
-              torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim))
+      return (torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim, requires_grad=True), 
+              torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim, requires_grad=True))

@@ -13,7 +13,26 @@ class PrepareData:
       self.build_dictionary()
       self.data_analitics()
       self.train_test_split_()
+      self.build_dictionary_one_hot()
    
+      pass
+   
+   def build_dictionary_one_hot(self):
+      self.dict_one_hot = dict()
+      
+      i = 0
+      for sentence in self.x_train:
+         for char in sentence:
+            if char not in self.dict_one_hot.keys():
+               self.dict_one_hot[char] = i
+               i+=1
+      
+      for sentence in self.x_test:
+         for char in sentence:
+            if char not in self.dict_one_hot.keys():
+               self.dict_one_hot[char] = i
+               i+=1
+
       pass
    
    def build_dictionary(self):
@@ -77,6 +96,20 @@ class PrepareData:
       self.train_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.train_text]
       self.test_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.test_text]
       
+      lengths_train = list()
+      lengths_test = list()
+      
+      for sentence in self.train_text:
+         lengths_train.append(len(sentence))
+      
+      for sentence in self.test_text:
+         lengths_test.append(len(sentence))
+         
+      print('max len train: ', max(lengths_train))
+      print('min len train: ', min(lengths_train))
+      print('\nmax len test: ', max(lengths_test))
+      print('min len test: ', min(lengths_test))
+      
       pass
       
    
@@ -94,7 +127,7 @@ class PrepareData:
    @staticmethod
    def remove_spaces(sentence, dictionary):
       
-      simbols = ['!','@','#','/','\\','-','_',':',',','''''']
+      simbols = ['!','@','#','/','\\','-','_',':',',',"'",'.', '&', ';','[', ']','|', '(', ')', '%', '=', '*', '~', '$', '}', '+', '{', '^', '`', '>']
       sentence = [s.lower() for s in sentence if s in dictionary.keys() and s not in simbols]
       
       return sentence 

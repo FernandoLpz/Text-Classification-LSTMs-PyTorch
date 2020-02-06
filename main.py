@@ -19,17 +19,18 @@ class ExecuteModel:
       self.y_test = data.y_test
       
       self.dictionary = data.dictionary
+      self.dict_one_hot = data.dict_one_hot
       
-      self.seq_len = 160
-      self.hidden_dim = 32
-      self.char_embedding_size = 64
-      self.batch_size = 64
-      self.LSTM_layers = 2
+      self.seq_len = 140
+      self.hidden_dim = 64
+      self.char_embedding_size = 37
+      self.batch_size = 16
+      self.LSTM_layers = 10
       
    def char_to_embedding(self, sentences):
       
       sentence_embedded = np.zeros((self.batch_size, self.seq_len, self.char_embedding_size))
-      
+
       i = 0
       for sentence in sentences:
          j = 0
@@ -40,6 +41,19 @@ class ExecuteModel:
 
       return sentence_embedded  
    
+   def char_to_one_hot(self, sentences):
+      sentence_embedded = np.zeros((self.batch_size, self.seq_len, self.char_embedding_size))
+      
+      i = 0
+      for sentence in sentences:
+         j = 0
+         for char in sentence:
+            sentence_embedded[i][j][self.dict_one_hot[char]] = 1
+            j+=1
+         i+=1
+         
+      return sentence_embedded
+   
    def prediction(self):
       self.net.eval()
       
@@ -48,7 +62,7 @@ class ExecuteModel:
       with torch.no_grad():
          
          for i in range(int(len(self.x_test)/self.batch_size)):
-            xval = self.char_to_embedding(self.x_test[i*self.batch_size:(i+1)*self.batch_size])
+            xval = self.char_to_one_hot(self.x_test[i*self.batch_size:(i+1)*self.batch_size])
             xval = np.reshape(xval, (xval.shape[1], self.batch_size, xval.shape[2]))
             
             xval = torch.from_numpy(xval).type(torch.FloatTensor)
@@ -79,7 +93,7 @@ class ExecuteModel:
          
          for i in range(int(len(self.x_train)/self.batch_size)):
             
-            x = self.char_to_embedding(self.x_train[i*self.batch_size:(i+1)*self.batch_size])
+            x = self.char_to_one_hot(self.x_train[i*self.batch_size:(i+1)*self.batch_size])
             x = np.reshape(x, (x.shape[1], self.batch_size, x.shape[2]))
             
             x = torch.from_numpy(x).type(torch.FloatTensor)
@@ -95,13 +109,13 @@ class ExecuteModel:
          
             optimizer.step()
             
-         if epoch % 5 == 0: 
+         if epoch % 1 == 0: 
             
             test_hc = self.net.init_hidden()
             
             for j in range(int(len(self.x_test)/self.batch_size)):
                
-               xt = self.char_to_embedding(self.x_test[j*self.batch_size:(j+1)*self.batch_size])
+               xt = self.char_to_one_hot(self.x_test[j*self.batch_size:(j+1)*self.batch_size])
                xt = np.reshape(xt, (xt.shape[1], self.batch_size, xt.shape[2]))
                
                xt = torch.from_numpy(xt).type(torch.FloatTensor)
