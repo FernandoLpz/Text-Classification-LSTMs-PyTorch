@@ -13,6 +13,8 @@ from sklearn.metrics import roc_auc_score
 class ExecuteModel:
    def __init__(self, data):
       
+      self.device = data.device
+      
       self.x_train = data.x_train
       self.x_test = data.x_test
       self.y_train = data.y_train
@@ -82,7 +84,7 @@ class ExecuteModel:
                             vocab_size=self.char_embedding_size, 
                             hidden_dim=self.hidden_dim, 
                             batch_size=self.batch_size,
-                            LSTM_layers=self.LSTM_layers)
+                            LSTM_layers=self.LSTM_layers).to(self.device)
 
       optimizer = optim.Adam(self.net.parameters(), lr=0.01)
       
@@ -99,7 +101,6 @@ class ExecuteModel:
             x = torch.from_numpy(x).type(torch.FloatTensor)
             y = torch.from_numpy(self.y_train[i*self.batch_size:(i+1)*self.batch_size]).type(torch.FloatTensor)
             
-            optimizer.zero_grad()
             
             output = self.net(x, hc)
 
@@ -108,6 +109,8 @@ class ExecuteModel:
             loss.backward()
          
             optimizer.step()
+            
+            optimizer.zero_grad()
             
          if epoch % 1 == 0: 
             

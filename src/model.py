@@ -6,6 +6,8 @@ class SiameseNet(nn.ModuleList):
    def __init__(self, **kwargs):
       super(SiameseNet, self).__init__()
       
+      self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+      
       # init the meta parameters
       self.hidden_dim = kwargs['hidden_dim']
       self.batch_size = kwargs['batch_size']
@@ -45,5 +47,5 @@ class SiameseNet(nn.ModuleList):
       # In case of using nn.LSTM, the hidden and current state must be defined as: [LSTM_layers, batch_size, hidden_dim]
       # IN case of using nn.LSTMCell, hidden and current state must be defined as: [batch_size, hidden_dim]
       
-      return (torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim, requires_grad=True), 
-              torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim, requires_grad=True))
+      return (torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim, requires_grad=True, device=self.device), 
+              torch.randn(self.LSTM_layers, self.batch_size, self.hidden_dim, requires_grad=True, device=self.device))
