@@ -13,7 +13,7 @@ from sklearn.metrics import roc_auc_score
 class ExecuteModel:
    def __init__(self, data):
       
-      self.device = data.device
+      self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
       
       self.x_train = data.x_train
       self.x_test = data.x_test
@@ -27,7 +27,7 @@ class ExecuteModel:
       self.hidden_dim = 64
       self.char_embedding_size = 37
       self.batch_size = 16
-      self.LSTM_layers = 10
+      self.LSTM_layers = 5
       
    def char_to_embedding(self, sentences):
       
@@ -86,7 +86,7 @@ class ExecuteModel:
                             batch_size=self.batch_size,
                             LSTM_layers=self.LSTM_layers).to(self.device)
 
-      optimizer = optim.Adam(self.net.parameters(), lr=0.01)
+      optimizer = optim.RMSprop(self.net.parameters(), lr=0.01)
       
       for epoch in range(100):
          self.net.train()
