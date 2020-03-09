@@ -21,13 +21,15 @@ class ExecuteModel:
       self.y_test = data.y_test
       
       self.dictionary = data.dictionary
-      self.dict_one_hot = data.dict_one_hot
       
       self.seq_len = 140
       self.hidden_dim = 64
       self.char_embedding_size = 37
       self.batch_size = 16
       self.LSTM_layers = 5
+      
+      for key, value in self.dictionary.items():
+         print(key, value)
       
    def char_to_embedding(self, sentences):
       
@@ -43,40 +45,6 @@ class ExecuteModel:
 
       return sentence_embedded  
    
-   def char_to_one_hot(self, sentences):
-      sentence_embedded = np.zeros((self.batch_size, self.seq_len, self.char_embedding_size))
-      
-      i = 0
-      for sentence in sentences:
-         j = 0
-         for char in sentence:
-            sentence_embedded[i][j][self.dict_one_hot[char]] = 1
-            j+=1
-         i+=1
-         
-      return sentence_embedded
-   
-   def prediction(self):
-      self.net.eval()
-      
-      val_hc = self.net.init_hidden()
-      auc_scores = list()
-      with torch.no_grad():
-         
-         for i in range(int(len(self.x_test)/self.batch_size)):
-            xval = self.char_to_one_hot(self.x_test[i*self.batch_size:(i+1)*self.batch_size])
-            xval = np.reshape(xval, (xval.shape[1], self.batch_size, xval.shape[2]))
-            
-            xval = torch.from_numpy(xval).type(torch.FloatTensor)
-            yval = torch.from_numpy(self.y_test[i*self.batch_size:(i+1)*self.batch_size]).type(torch.FloatTensor)
-            
-            y_pred = self.net(xval, val_hc)
-            
-            auc_scores.append(roc_auc_score(yval, y_pred))
-            
-         auc = sum(auc_scores) / len(auc_scores)
-      
-      return auc
       
    def init_train(self):
    
@@ -95,7 +63,7 @@ class ExecuteModel:
          
          for i in range(int(len(self.x_train)/self.batch_size)):
             
-            x = self.char_to_one_hot(self.x_train[i*self.batch_size:(i+1)*self.batch_size])
+            x = self.char_embedding_size(self.x_train[i*self.batch_size:(i+1)*self.batch_size])
             x = np.reshape(x, (x.shape[1], self.batch_size, x.shape[2]))
             
             x = torch.from_numpy(x).type(torch.FloatTensor)
@@ -133,6 +101,29 @@ class ExecuteModel:
             print("Epoch: {}, Train Loss: {:.6f}, Test Loss: {:.6f}, AUC: {:.6f}".format(epoch, loss.item(), test_loss.item(), auc))
 
 
+   def prediction(self):
+      
+      self.net.eval()
+      
+      val_hc = self.net.init_hidden()
+      auc_scores = list()
+      with torch.no_grad():
+         
+         for i in range(int(len(self.x_test)/self.batch_size)):
+            xval = self.char_embedding_siz(self.x_test[i*self.batch_size:(i+1)*self.batch_size])
+            xval = np.reshape(xval, (xval.shape[1], self.batch_size, xval.shape[2]))
+            
+            xval = torch.from_numpy(xval).type(torch.FloatTensor)
+            yval = torch.from_numpy(self.y_test[i*self.batch_size:(i+1)*self.batch_size]).type(torch.FloatTensor)
+            
+            y_pred = self.net(xval, val_hc)
+            
+            auc_scores.append(roc_auc_score(yval, y_pred))
+            
+         auc = sum(auc_scores) / len(auc_scores)
+      
+      return auc
+   
 if __name__ == "__main__":
    
    data = PrepareData()

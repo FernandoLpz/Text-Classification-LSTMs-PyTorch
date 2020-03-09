@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import re
 
-from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 
 plt.style.use('seaborn-white')
@@ -13,26 +12,7 @@ class PrepareData:
       self.build_dictionary()
       self.data_analitics()
       self.train_test_split_()
-      self.build_dictionary_one_hot()
    
-      pass
-   
-   def build_dictionary_one_hot(self):
-      self.dict_one_hot = dict()
-      
-      i = 0
-      for sentence in self.x_train:
-         for char in sentence:
-            if char not in self.dict_one_hot.keys():
-               self.dict_one_hot[char] = i
-               i+=1
-      
-      for sentence in self.x_test:
-         for char in sentence:
-            if char not in self.dict_one_hot.keys():
-               self.dict_one_hot[char] = i
-               i+=1
-
       pass
    
    def build_dictionary(self):
@@ -51,16 +31,7 @@ class PrepareData:
          embeddings.append(emb)
          
       embeddings = np.array(embeddings)
-      
-      pca = PCA(n_components=64)
-      embeddings = pca.fit_transform(embeddings)
-      
-      i=0
-      for char in self.dictionary.keys():
-         self.dictionary[char] = embeddings[i]
-         i+=1
          
-      
       pass
    
    def data_analitics(self):
