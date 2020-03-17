@@ -10,6 +10,7 @@ plt.style.use('seaborn-white')
 class PrepareData:
    def __init__(self):
       self.build_dictionary()
+      self.char_to_id()
       self.data_analitics()
       self.train_test_split_()
    
@@ -26,11 +27,21 @@ class PrepareData:
          item = item.strip().split()
          self.dictionary[item[0]] = item[1:]
          
-      embeddings = list()
+      self.embeddings = list()
       for emb in self.dictionary.values():
-         embeddings.append(emb)
+         emb = [float(i) for i in emb]
+         self.embeddings.append(emb)
          
-      embeddings = np.array(embeddings)
+      self.embeddings = np.matrix(self.embeddings)
+         
+      pass
+   
+   def char_to_id(self):
+      
+      self.ch_to_id = dict()
+      
+      for id,char in enumerate(self.dictionary.keys()):
+         self.ch_to_id[char] = id
          
       pass
    
@@ -80,13 +91,21 @@ class PrepareData:
       
    
    def train_test_split_(self):
+      
       self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.train_text, self.target, test_size=0.20, random_state=42)
+         
+      self.y_train = np.reshape(self.y_train, (self.y_train.shape[0], 1))
+      self.y_test = np.reshape(self.y_test, (self.y_test.shape[0], 1))
+      
+      # Transforming chars to ids
+      self.x_train = [np.array([self.ch_to_id[char] for char in sample]) for sample in self.x_train]
+      self.x_test = [np.array([self.ch_to_id[char] for char in sample]) for sample in self.x_test]
+   
+      self.x_train = np.array(self.x_train)
+      self.x_test = np.array(self.x_test)
       
       self.y_train = np.array(self.y_train)
       self.y_test = np.array(self.y_test)
-      
-      self.y_train = np.reshape(self.y_train, (self.y_train.shape[0], 1))
-      self.y_test = np.reshape(self.y_test, (self.y_test.shape[0], 1))
       
       pass
    

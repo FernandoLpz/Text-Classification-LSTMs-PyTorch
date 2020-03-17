@@ -1,2 +1,2 @@
 from .utils import PrepareData
-from .model import SiameseNet
+from .model import TextClassifier

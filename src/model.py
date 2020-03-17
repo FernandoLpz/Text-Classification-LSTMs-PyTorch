@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class SiameseNet(nn.ModuleList):
+class TextClassifier(nn.ModuleList):
    def __init__(self, seq_len, embedding_size, hidden_dim, batch_size, num_layers):
-      super(SiameseNet, self).__init__()
+      super(TextClassifier, self).__init__()
       
       self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
       
