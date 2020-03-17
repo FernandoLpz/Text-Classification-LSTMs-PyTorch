@@ -23,13 +23,10 @@ class ExecuteModel:
       self.dictionary = data.dictionary
       
       self.seq_len = 140
+      self.num_layers = 5
       self.hidden_dim = 64
-      self.char_embedding_size = 37
       self.batch_size = 16
-      self.LSTM_layers = 5
-      
-      for key, value in self.dictionary.items():
-         print(key, value)
+      self.embedding_size = 37
       
    def char_to_embedding(self, sentences):
       
@@ -48,15 +45,12 @@ class ExecuteModel:
       
    def init_train(self):
    
-      self.net = SiameseNet(sequence_len=self.seq_len, 
-                            vocab_size=self.char_embedding_size, 
-                            hidden_dim=self.hidden_dim, 
-                            batch_size=self.batch_size,
-                            LSTM_layers=self.LSTM_layers).to(self.device)
+      self.net = SiameseNet(self.seq_len, self.embedding_size, self.hidden_dim, self.batch_size, self.num_layers).to(self.device)
 
       optimizer = optim.RMSprop(self.net.parameters(), lr=0.01)
       
       for epoch in range(100):
+         
          self.net.train()
          
          hc = self.net.init_hidden()
@@ -129,4 +123,4 @@ if __name__ == "__main__":
    data = PrepareData()
    
    exeModel = ExecuteModel(data)   
-   exeModel.init_train()
+   # exeModel.init_train()

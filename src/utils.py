@@ -75,11 +75,6 @@ class PrepareData:
       
       for sentence in self.test_text:
          lengths_test.append(len(sentence))
-         
-      print('max len train: ', max(lengths_train))
-      print('min len train: ', min(lengths_train))
-      print('\nmax len test: ', max(lengths_test))
-      print('min len test: ', min(lengths_test))
       
       pass
       
