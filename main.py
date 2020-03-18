@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import precision_score
 
 class ExecuteModel:
    def __init__(self, data):
@@ -37,12 +38,14 @@ class ExecuteModel:
 
       
    def init_train(self):
+      
+      predictions = list()
    
       embedding = self.initialize_embeddings()
       
       self.model = TextClassifier(self.seq_len, self.embedding_size, self.hidden_dim, self.batch_size, self.num_layers).to(self.device)
 
-      optimizer = optim.RMSprop(self.model.parameters(), lr=0.01)
+      optimizer = optim.RMSprop(self.model.parameters(), lr=0.001)
       
       for epoch in range(100):
          
@@ -58,11 +61,10 @@ class ExecuteModel:
             x = embedding(x)
             
             x = x.reshape(x.shape[0], 1, x.shape[1])
-            # x = np.reshape(x, (x.shape[1], 1, x.shape[2]))
-            
-            output = self.model(x, hc)
 
-            loss = F.binary_cross_entropy(output, y)
+            y_pred = self.model(x, hc)
+
+            loss = F.binary_cross_entropy(y_pred, y.float())
             
             loss.backward()
 
@@ -70,9 +72,14 @@ class ExecuteModel:
             
             optimizer.zero_grad()
             
-            print("Epoch: %d, Loss %s " % (epoch+1, loss.item()))
-            break
-         break
+            predictions.append(y_pred.detach().numpy)
+        
+         roc_auc = roc_auc_score(self.y_train, predictions)
+         accuracy = accuracy_score(self.y_train, predictions)
+         precision = precision_score(self.y_train, predictions)
+         
+         print("Epoch: %d, Loss %s , AUC: %.5f, ACC: %.5f, precision: %.5f" % (epoch+1, loss.item(), roc_auc, accuracy, precision))
+            
          
             
 
