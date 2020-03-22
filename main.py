@@ -17,9 +17,12 @@ class ExecuteModel:
       self.y_train = data.y_train
       self.y_test = data.y_test
       
+      print("x_train: ", self.x_train[0])
+      print("x_test: ", self.x_test.shape)
+      
 
-      self.num_layers = 3
-      self.hidden_dim = 128
+      self.num_layers = 2
+      self.hidden_dim = 16
       self.num_epochs = 30
       self.embedding_size = 300
       
@@ -90,7 +93,7 @@ class ExecuteModel:
          
          for sequence, target in zip(self.x_test, self.y_test):
             
-            hc = self.net.init_hidden()
+            hc = self.model.init_hidden()
             
             x = torch.from_numpy(sequence).type(torch.LongTensor)
             y = torch.from_numpy(target).type(torch.LongTensor)
