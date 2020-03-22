@@ -67,15 +67,20 @@ class ExecuteModel:
             optimizer.zero_grad()
             
             predictions.append(y_pred.detach().numpy())
+           
+         # Show metrics every two epochs 
+         if epoch % 2 == 0:
             
-         predictions = np.array(predictions)
-         
-         roc_auc = roc_auc_score(self.y_train, predictions)
-         
-         print("Epoch: %d, Loss %s , AUC: %.5f" % (epoch+1, loss.item(), roc_auc))
+            predictions = np.array(predictions)
+            
+            train_auc = roc_auc_score(self.y_train, predictions)
+            
+            test_auc, test_loss = self.evaluation()
+            
+            print("Epoch: %d, Train Loss %.5f , Test Loss: %.5f, Train AUC: %.5f, Test AUC: %.5f" % (epoch+1, loss.item(), test_loss, train_auc, test_auc))
            
 
-   def prediction(self):
+   def evaluation(self):
       
       predictions = list()
       
