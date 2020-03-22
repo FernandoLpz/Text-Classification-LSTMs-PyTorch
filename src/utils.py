@@ -9,6 +9,7 @@ plt.style.use('seaborn-white')
 
 class PrepareData:
    def __init__(self):
+      
       self.build_dictionary()
       self.char_to_id()
       self.data_analitics()
@@ -19,6 +20,7 @@ class PrepareData:
    def build_dictionary(self):
       
       self.dictionary = dict()
+      self.embeddings = list()
       
       with open('data/char_embeddigns.txt','r') as f:
          file = f.readlines()
@@ -27,7 +29,6 @@ class PrepareData:
          item = item.strip().split()
          self.dictionary[item[0]] = item[1:]
          
-      self.embeddings = list()
       for emb in self.dictionary.values():
          emb = [float(i) for i in emb]
          self.embeddings.append(emb)
@@ -77,15 +78,6 @@ class PrepareData:
       
       self.train_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.train_text]
       self.test_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.test_text]
-      
-      lengths_train = list()
-      lengths_test = list()
-      
-      for sentence in self.train_text:
-         lengths_train.append(len(sentence))
-      
-      for sentence in self.test_text:
-         lengths_test.append(len(sentence))
       
       pass
       

@@ -3,21 +3,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class TextClassifier(nn.ModuleList):
-   def __init__(self, seq_len, embedding_size, hidden_dim, batch_size, num_layers):
+   def __init__(self, embedding_size, hidden_dim, num_layers):
       super(TextClassifier, self).__init__()
       
-      self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-      
       # init the meta parameters
-      self.sequence_len = seq_len
-      self.batch_size = batch_size
       self.hidden_dim = hidden_dim
       self.LSTM_layers = num_layers
       self.vocab_size = embedding_size
       
       self.lstm = nn.LSTM(input_size=self.vocab_size, hidden_size=self.hidden_dim, num_layers=self.LSTM_layers, dropout=0.1)
       self.fc = nn.Linear(in_features=self.hidden_dim, out_features=1)
-      self.dropout = nn.Dropout(p=0.1)
       
    def forward(self, x, hc):
 
@@ -27,11 +22,10 @@ class TextClassifier(nn.ModuleList):
       out, hidden = self.lstm(x, hc)
       
       # We take the last output, we do not care the previous outputs
-      out = out[-1, :, :]
+      out = out[-1, :, :][0]
       
-      # Feed Forward Neural Net with relu as activation function
+      # Feed Forward Neural Net with sigmoid as activation function
       # out = F.relu(self.fc(self.dropout(out)))
-      
       out = torch.sigmoid(self.fc(out))
       
       return out
