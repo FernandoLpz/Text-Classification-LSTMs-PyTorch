@@ -18,9 +18,9 @@ class ExecuteModel:
       self.y_test = data.y_test
       
       self.num_layers = 2
-      self.hidden_dim = 16
+      self.hidden_dim = 8
       self.num_epochs = 30
-      self.batch_size = 128
+      self.batch_size = 6
       self.embedding_size = 300
       
       self.embeddings = self.initialize_embeddings(data.embeddings)

@@ -89,16 +89,16 @@ class PrepareData:
       
       # Padding sequences
       for seq in train_text:
-         if len(seq) < 140:
+         if len(seq) < 80:
             new_seq = list()
-            while len(new_seq) < 140:
+            while len(new_seq) < 80:
                new_seq.append('pad')
          self.padded_train_text.append(new_seq)
          
       for seq in test_text:
-         if len(seq) < 140:
+         if len(seq) < 80:
             new_seq = list()
-            while (len(new_seq) < 140):
+            while (len(new_seq) < 80):
                new_seq.append('pad')
          self.padded_test_text.append(new_seq)
 

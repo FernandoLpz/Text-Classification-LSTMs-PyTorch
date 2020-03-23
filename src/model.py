@@ -11,8 +11,8 @@ class TextClassifier(nn.ModuleList):
       self.LSTM_layers = num_layers
       self.vocab_size = embedding_size
       
-      self.lstm = nn.LSTM(input_size=self.vocab_size, hidden_size=self.hidden_dim, num_layers=self.LSTM_layers, dropout=0.1, bidirectional=True)
-      self.fc = nn.Linear(in_features=self.hidden_dim * 2, out_features=1)
+      self.lstm = nn.LSTM(input_size=self.vocab_size, hidden_size=self.hidden_dim, num_layers=self.LSTM_layers, dropout=0.1, bidirectional=False)
+      self.fc = nn.Linear(in_features=self.hidden_dim, out_features=1)
       
    def forward(self, x, hc):
 
@@ -37,11 +37,11 @@ class TextClassifier(nn.ModuleList):
       # In case of using nn.LSTM, the hidden and current state must be defined as: [LSTM_layers, batch_size, hidden_dim]
       # IN case of using nn.LSTMCell, hidden and current state must be defined as: [batch_size, hidden_dim]
       
-      h = torch.zeros((self.LSTM_layers * 2, self.batch_size, self.hidden_dim), dtype=torch.float, requires_grad=True)
-      c = torch.zeros((self.LSTM_layers * 2, self.batch_size, self.hidden_dim), dtype=torch.float, requires_grad=True)
+      h = torch.zeros((self.LSTM_layers, self.batch_size, self.hidden_dim), dtype=torch.float, requires_grad=True)
+      c = torch.zeros((self.LSTM_layers, self.batch_size, self.hidden_dim), dtype=torch.float, requires_grad=True)
       
-      torch.nn.init.normal_(h, mean=0, std=0.001)
-      torch.nn.init.normal_(c, mean=0, std=0.001)
+      torch.nn.init.normal_(h, mean=0, std=0.1)
+      torch.nn.init.normal_(c, mean=0, std=0.1)
       
       hidden_states = (h,c)
       
