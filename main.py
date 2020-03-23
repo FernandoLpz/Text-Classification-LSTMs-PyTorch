@@ -17,13 +17,10 @@ class ExecuteModel:
       self.y_train = data.y_train
       self.y_test = data.y_test
       
-      print("x_train: ", self.x_train[0])
-      print("x_test: ", self.x_test.shape)
-      
-
       self.num_layers = 2
       self.hidden_dim = 16
       self.num_epochs = 30
+      self.batch_size = 128
       self.embedding_size = 300
       
       self.embeddings = self.initialize_embeddings(data.embeddings)
@@ -38,7 +35,7 @@ class ExecuteModel:
       
    def init_train(self):
       
-      self.model = TextClassifier(self.embedding_size, self.hidden_dim, self.num_layers)
+      self.model = TextClassifier(self.embedding_size, self.hidden_dim, self.num_layers, self.batch_size)
 
       optimizer = optim.RMSprop(self.model.parameters(), lr=0.001)
       
@@ -47,17 +44,21 @@ class ExecuteModel:
          self.model.train()
          
          predictions = list()
+         y_real = list()
          
-         for sequence, target in zip(self.x_train, self.y_train):
-
+         for i in range(int(self.x_train.shape[0] / self.batch_size)):
+         
+            x_batch = self.x_train[i * self.batch_size : (i+1) * self.batch_size]
+            y_batch = self.y_train[i * self.batch_size : (i+1) * self.batch_size]
+            
             hc = self.model.init_hidden()
             
-            x = torch.from_numpy(sequence).type(torch.LongTensor)
-            y = torch.from_numpy(target).type(torch.LongTensor)
-            
+            x = torch.from_numpy(x_batch).type(torch.LongTensor)
+            y = torch.from_numpy(y_batch).type(torch.LongTensor)
+
             x = self.embeddings(x)
-            
-            x = x.reshape(x.shape[0], 1, x.shape[1])
+
+            x = x.reshape(x.shape[1], self.batch_size, x.shape[2])
 
             y_pred = self.model(x, hc)
 
@@ -69,18 +70,19 @@ class ExecuteModel:
             
             optimizer.zero_grad()
             
-            predictions.append(y_pred.detach().numpy())
-           
+            y_real += list(y.squeeze().detach().numpy())
+            predictions += list(y_pred.squeeze().detach().numpy())
+            
          # Show metrics every two epochs 
          if epoch % 2 == 0:
+         
+            train_auc = roc_auc_score(y_real, predictions)
             
-            predictions = np.array(predictions)
+            print("Epoch: %d, Train Loss: %.5f, Train AUC: %.5f" % (epoch, loss.item(), train_auc))
+               
+            # test_auc, test_loss = self.evaluation()
             
-            train_auc = roc_auc_score(self.y_train, predictions)
-            
-            test_auc, test_loss = self.evaluation()
-            
-            print("Epoch: %d, Train Loss %.5f , Test Loss: %.5f, Train AUC: %.5f, Test AUC: %.5f" % (epoch+1, loss.item(), test_loss, train_auc, test_auc))
+            # print("Epoch: %d, Train Loss %.5f , Test Loss: %.5f, Train AUC: %.5f, Test AUC: %.5f" % (epoch+1, loss.item(), test_loss, train_auc, test_auc))
            
 
    def evaluation(self):

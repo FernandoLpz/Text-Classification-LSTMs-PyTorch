@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class TextClassifier(nn.ModuleList):
-   def __init__(self, embedding_size, hidden_dim, num_layers):
+   def __init__(self, embedding_size, hidden_dim, num_layers, batch_size):
       super(TextClassifier, self).__init__()
       
+      self.batch_size = batch_size
       self.hidden_dim = hidden_dim
       self.LSTM_layers = num_layers
       self.vocab_size = embedding_size
@@ -21,7 +22,7 @@ class TextClassifier(nn.ModuleList):
       hidden, state = self.lstm(x, hc)
       
       # We take the last output, we do not care the previous outputs
-      hidden = hidden[-1, :, :][0]
+      hidden = hidden[-1, :, :]
       
       # Feed Forward Neural Net with sigmoid as activation function
       # out = F.relu(self.fc(self.dropout(out)))
@@ -36,8 +37,8 @@ class TextClassifier(nn.ModuleList):
       # In case of using nn.LSTM, the hidden and current state must be defined as: [LSTM_layers, batch_size, hidden_dim]
       # IN case of using nn.LSTMCell, hidden and current state must be defined as: [batch_size, hidden_dim]
       
-      h = torch.zeros((self.LSTM_layers * 2, 1, self.hidden_dim), dtype=torch.float, requires_grad=True)
-      c = torch.zeros((self.LSTM_layers * 2, 1, self.hidden_dim), dtype=torch.float, requires_grad=True)
+      h = torch.zeros((self.LSTM_layers * 2, self.batch_size, self.hidden_dim), dtype=torch.float, requires_grad=True)
+      c = torch.zeros((self.LSTM_layers * 2, self.batch_size, self.hidden_dim), dtype=torch.float, requires_grad=True)
       
       torch.nn.init.normal_(h, mean=0, std=0.001)
       torch.nn.init.normal_(c, mean=0, std=0.001)

@@ -29,11 +29,14 @@ class PrepareData:
          item = item.strip().split()
          self.dictionary[item[0]] = item[1:]
          
+      # Adding the padding term
+      self.dictionary['pad'] = np.random.randn(300)
+             
       for emb in self.dictionary.values():
          emb = [float(i) for i in emb]
          self.embeddings.append(emb)
          
-      self.embeddings = np.matrix(self.embeddings)
+      self.embeddings = np.array(self.embeddings)
          
       pass
    
@@ -47,16 +50,18 @@ class PrepareData:
       pass
    
    def data_analitics(self):
+      
       train_data = pd.read_csv('data/train.csv', delimiter=',')
-      self.train_text = train_data['text'].tolist()
+      
+      train_text = train_data['text'].tolist()
       self.target = train_data['target'].values
       
       test_data = pd.read_csv('data/test.csv', delimiter=',')
-      self.test_text = test_data['text'].tolist()
+      test_text = test_data['text'].tolist()
       
       # Prints hist about tweets length
-      train_lengths = [len(i) for i in self.train_text]
-      test_lengths = [len(i) for i in self.test_text]
+      train_lengths = [len(i) for i in train_text]
+      test_lengths = [len(i) for i in test_text]
       
       train_mean = sum(train_lengths) / len(train_lengths)
       train_variance = sum([((length - train_mean) ** 2) for length in train_lengths]) / len(train_lengths)
@@ -76,28 +81,55 @@ class PrepareData:
       plt.hist(test_lengths, histtype='stepfilled', color='green', edgecolor='green', alpha=0.3)
       #plt.show()
       
-      self.train_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.train_text]
-      self.test_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in self.test_text]
+      train_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in train_text]
+      test_text = [PrepareData.remove_spaces(sentence, self.dictionary) for sentence in test_text]
       
+      self.padded_train_text = list()
+      self.padded_test_text = list()
+      
+      # Padding sequences
+      for seq in train_text:
+         if len(seq) < 140:
+            new_seq = list()
+            while len(new_seq) < 140:
+               new_seq.append('pad')
+         self.padded_train_text.append(new_seq)
+         
+      for seq in test_text:
+         if len(seq) < 140:
+            new_seq = list()
+            while (len(new_seq) < 140):
+               new_seq.append('pad')
+         self.padded_test_text.append(new_seq)
+
       pass
       
    
    def train_test_split_(self):
       
-      self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(self.train_text, self.target, test_size=0.20, random_state=42)
+      xtrain, xtest, ytrain, ytest = train_test_split(self.padded_train_text, self.target, test_size=0.20, random_state=42)
          
-      self.y_train = np.reshape(self.y_train, (self.y_train.shape[0], 1))
-      self.y_test = np.reshape(self.y_test, (self.y_test.shape[0], 1))
+      self.y_train = np.reshape(ytrain, (ytrain.shape[0], 1))
+      self.y_test = np.reshape(ytest, (ytest.shape[0], 1))
       
-      # Transforming chars to ids
-      self.x_train = [np.array([self.ch_to_id[char] for char in sample]) for sample in self.x_train]
-      self.x_test = [np.array([self.ch_to_id[char] for char in sample]) for sample in self.x_test]
+      self.x_train, self.x_test = list(), list()
+      
+      for sentence in xtrain:
+         to_id = list()
+         for char in sentence:
+            to_id.append(self.ch_to_id[char])
+         to_id = np.array(to_id)
+         self.x_train.append(to_id)
+         
+      for sentence in xtest:
+         to_id = list()
+         for char in sentence:
+            to_id.append(self.ch_to_id[char])
+         to_id = np.array(to_id)
+         self.x_test.append(to_id)
    
       self.x_train = np.array(self.x_train)
       self.x_test = np.array(self.x_test)
-      
-      self.y_train = np.array(self.y_train)
-      self.y_test = np.array(self.y_test)
       
       pass
    
