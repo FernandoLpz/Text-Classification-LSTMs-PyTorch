@@ -17,10 +17,10 @@ class ExecuteModel:
       self.y_train = data.y_train
       self.y_test = data.y_test
       
-      self.num_layers = 2
-      self.hidden_dim = 8
-      self.num_epochs = 30
-      self.batch_size = 6
+      self.num_layers = 4
+      self.hidden_dim = 64
+      self.num_epochs = 200
+      self.batch_size = 2
       self.embedding_size = 300
       
       self.embeddings = self.initialize_embeddings(data.embeddings)
@@ -37,7 +37,8 @@ class ExecuteModel:
       
       self.model = TextClassifier(self.embedding_size, self.hidden_dim, self.num_layers, self.batch_size)
 
-      optimizer = optim.RMSprop(self.model.parameters(), lr=0.001)
+      optimizer = optim.SGD(self.model.parameters(), lr=0.01)
+      # optimizer = optim.RMSprop(self.model.parameters(), lr=0.01)
       
       for epoch in range(self.num_epochs):
          
@@ -53,12 +54,15 @@ class ExecuteModel:
             
             hc = self.model.init_hidden()
             
+            # x.shape = [batch_size, seq_len]
+            # y.shape = [batch_size, 1]
             x = torch.from_numpy(x_batch).type(torch.LongTensor)
             y = torch.from_numpy(y_batch).type(torch.LongTensor)
 
+            # x.shape = [batch_size, seq_len, embedding_size]
             x = self.embeddings(x)
 
-            x = x.reshape(x.shape[1], self.batch_size, x.shape[2])
+            # x = x.reshape(x.shape[1], self.batch_size, x.shape[2])
 
             y_pred = self.model(x, hc)
 
@@ -72,6 +76,8 @@ class ExecuteModel:
             
             y_real += list(y.squeeze().detach().numpy())
             predictions += list(y_pred.squeeze().detach().numpy())
+            break
+         break
             
          # Show metrics every two epochs 
          if epoch % 2 == 0:

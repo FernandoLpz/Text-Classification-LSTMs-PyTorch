@@ -87,20 +87,27 @@ class PrepareData:
       self.padded_train_text = list()
       self.padded_test_text = list()
       
+      
+      # Padding sentences
+      maxim = 0
+      for seq in train_text:
+         if len(seq) > maxim:
+            maxim = len(seq)
+      
       # Padding sequences
       for seq in train_text:
-         if len(seq) < 80:
-            new_seq = list()
-            while len(new_seq) < 80:
-               new_seq.append('pad')
-         self.padded_train_text.append(new_seq)
+         if len(seq) < maxim:
+            while len(seq) < maxim:
+               seq.append('pad')
+            self.padded_train_text.append(seq)
+         else:
+            self.padded_train_text.append(seq)
          
       for seq in test_text:
-         if len(seq) < 80:
-            new_seq = list()
-            while (len(new_seq) < 80):
-               new_seq.append('pad')
-         self.padded_test_text.append(new_seq)
+         if len(seq) < maxim:
+            while len(seq) < maxim:
+               seq.append('pad')
+         self.padded_test_text.append(seq)
 
       pass
       
@@ -136,7 +143,7 @@ class PrepareData:
    @staticmethod
    def remove_spaces(sentence, dictionary):
       
-      simbols = ['!','@','#','/','\\','-','_',':',',',"'",'.', '&', ';','[', ']','|', '(', ')', '%', '=', '*', '~', '$', '}', '+', '{', '^', '`', '>']
+      simbols = ['\\',"'", '&', ';','[', ']','|', '(', ')', '%', '=', '~', '}', '+', '{', '^', '`', '>']
       sentence = [s.lower() for s in sentence if s in dictionary.keys() and s not in simbols]
       
       return sentence 
