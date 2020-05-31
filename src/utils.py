@@ -144,7 +144,7 @@ class PrepareData:
    def remove_spaces(sentence, dictionary):
       
       simbols = ['\\',"'", '&', ';','[', ']','|', '(', ')', '%', '=', '~', '}', '+', '{', '^', '`', '>']
-      sentence = [s.lower() for s in sentence if s in dictionary.keys() and s not in simbols]
+      sentence = [s for s in sentence if s in dictionary.keys() and s not in simbols]
       
       return sentence 
    

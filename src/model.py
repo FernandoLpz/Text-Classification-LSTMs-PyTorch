@@ -11,16 +11,20 @@ class TextClassifier(nn.ModuleList):
       self.LSTM_layers = num_layers
       self.vocab_size = embedding_size
       
-      self.dropout = nn.Dropout(0.25)
+      self.dropout = nn.Dropout(0.5)
       
-      self.cnn = nn.Conv1d(in_channels=self.vocab_size, out_channels=75, kernel_size=3, stride=2)
+      self.cnn = nn.Conv1d(in_channels=136, out_channels=70, kernel_size=3, stride=2)
       self.lstm = nn.LSTM(input_size=self.vocab_size, hidden_size=self.hidden_dim, num_layers=self.LSTM_layers, bidirectional=False)
-      self.fc1 = nn.Linear(in_features=self.hidden_dim , out_features=self.hidden_dim )
-      self.fc2 = nn.Linear(in_features=self.hidden_dim, out_features=1)
+      #self.fc1 = nn.Linear(in_features=self.hidden_dim , out_features=self.hidden_dim )
+      self.fc1 = nn.Linear(in_features=self.hidden_dim, out_features=1)
       
    def forward(self, x, hc):
 
+      # cnn_out = self.cnn(x)
       
+      # cnn_out = self.dropout(cnn_out)
+      
+      # cnn_out = cnn_out.reshape(cnn_out.shape[1], self.batch_size, cnn_out.shape[2])
       # out: tensor of shape [seq_len, batch_size, hidden_dim]. This tensor contains all the outputs
       # for each LSTM cell
       # hidden: tuple which contains (all hidden states, all current states)
@@ -29,18 +33,21 @@ class TextClassifier(nn.ModuleList):
       # We take the last output, we do not care the previous outputs
       # hidden = hidden[-1, :, :]
       # hidden = hidden.contiguous().view(-1, self.hidden_dim)
+
       hidden = hidden.squeeze()[-1, :]
-      
+
       # Dropout
       hidden = self.dropout(hidden)
       
       # Feed Forward Neural Net with sigmoid as activation function
-      out = F.tanh(self.fc1(hidden))
-      out = torch.sigmoid(self.fc2(out))
+      # out = torch.tanh(self.fc1(hidden))
+      out = torch.sigmoid(self.fc1(hidden))
 
       out = out.view(self.batch_size, -1)
-      out = out[:,-1]
       
+      # Just remove one dimention
+      #out = out[:,-1]
+
       return out
    
    def init_hidden(self):
