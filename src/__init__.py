@@ -1,2 +1,2 @@
-from .utils import PrepareData
-from .model import TextClassifier
+from .utils import Preprocessing
+from .model import TweetClassifier
