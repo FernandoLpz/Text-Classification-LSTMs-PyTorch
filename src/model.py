@@ -6,7 +6,7 @@ class TweetClassifier(nn.ModuleList):
 
 	def __init__(self):
 		super(TweetClassifier, self).__init__()
-		self.batch_size = 2
+		self.batch_size = 64
 		self.hidden_dim = 64
 		self.LSTM_layers = 64
 		self.input_size = 1 # in case of embeddings, it would be 300
@@ -19,11 +19,12 @@ class TweetClassifier(nn.ModuleList):
 	def forward(self, x, hc):
 	
 		hidden, current = self.lstm(x, hc)
+		hidden = hidden[-1]
 		hidden = self.dropout(hidden)
 		out = torch.relu_(self.fc1(hidden))
 		out = torch.sigmoid(self.fc2(out))
-		out = out.view(self.batch_size, -1)
-		
+		out = out.view(self.batch_size)
+
 		return out
 		
 	def init_hidden(self):

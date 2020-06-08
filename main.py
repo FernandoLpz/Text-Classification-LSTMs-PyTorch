@@ -26,8 +26,9 @@ class MyMapDataset(Dataset):
 		
 
 class Execute:
+
    def __init__(self):
-      self.batch_size = 2
+      self.batch_size = 64
       self.__init_data__()
       self.model = TweetClassifier()
       
@@ -58,40 +59,38 @@ class Execute:
       
       for epoch in range(10):
       	
-      	predictions = list()
-      	y_real = list()
-         
+      	accuracy = 0
+      	
       	self.model.train()
+
+      	hc = self.model.init_hidden()
+      	lote = 0
       	
       	for x_batch, y_batch in loader_training:
       		
-      		hc = self.model.init_hidden()
       		
       		x = x_batch.type(torch.FloatTensor)
       		y = y_batch.type(torch.FloatTensor)
       		
-      	# 	x = torch.from_numpy(x_batch).type(torch.FloatTensor)
-      	# 	y = torch.from_numpy(y_batch).type(torch.FloatTensor)
-      		
-	      	x = x.reshape(x.shape[1], self.batch_size, 1)
+      		try:
+	      	  x = x.reshape(x.shape[1], self.batch_size, 1)
+	      	except:
+	      	  break
+	      	
 	      	y_pred = self.model(x, hc)
-	      	print('y: ', y.shape)
-	      	print('y_pred: ', y_pred.shape)
+	      	
+	      	loss = F.binary_cross_entropy(y_pred, y)
+	      	
+	      	loss.backward()
       		
-      	# 	loss = F.binary_cross_entropy(y_pred, y.float())
+      		optimizer.step()
       		
-      	# 	loss.backward()
-      		
-      	# 	optimizer.step()
-      		
-      	# 	optimizer.zero_grad()
-      		
-      	# 	y_real += list(y.squeeze().detach().numpy())
-      	# 	predictions += list(y_pred.squeeze().detach().numpy())
-      		
-      	# if epoch % 2 == 0:
-      	# 	train_auc = roc_auc_score(y_real, predictions)
-      	# 	print("Epoch: %d, Train Loss %.5f , Train AUC: %.5f" % (epoch+1, loss.item(), train_auc))
+      		optimizer.zero_grad()
+      		accuracy += torch.eq(y_pred.round(), y).float().mean()
+      		lote += 1
+
+      	accuracy = accuracy / lote
+      	print("Epoch: %d, Loss %.5f , ACC: %.5f" % (epoch+1, loss.item(), accuracy))
 
    
 if __name__ == "__main__":
