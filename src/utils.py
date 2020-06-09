@@ -10,8 +10,8 @@ from sklearn.model_selection import train_test_split
 class Preprocessing:
 	
 	def __init__(self):
-		self.max_len = 20
-		self.max_words = 1000
+		self.max_len = 30
+		self.max_words = 500
 		self.data = 'data/train.csv'
 		self.test_size = 0.15
 		

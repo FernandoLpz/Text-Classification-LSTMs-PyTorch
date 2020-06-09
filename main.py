@@ -13,6 +13,8 @@ from src import TweetClassifier
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
+np.random.seed(12)
+
 class MyMapDataset(Dataset):
 	def __init__(self, x, y):
 		self.x = x
@@ -27,73 +29,72 @@ class MyMapDataset(Dataset):
 
 class Execute:
 
-   def __init__(self):
-      self.batch_size = 64
-      self.__init_data__()
-      self.model = TweetClassifier()
-      
-   def __init_data__(self):
-   
-      self.preprocessing = Preprocessing()
-      self.preprocessing.load_data()
-      self.preprocessing.prepare_tokens()
+	def __init__(self):
+		self.batch_size = 64
+		self.__init_data__()
+		self.model = TweetClassifier()
+		
+	def __init_data__(self):
+	
+		self.preprocessing = Preprocessing()
+		self.preprocessing.load_data()
+		self.preprocessing.prepare_tokens()
 
-      raw_x_train = self.preprocessing.x_train
-      raw_x_test = self.preprocessing.x_test
-      
-      self.y_train = self.preprocessing.y_train
-      self.y_test = self.preprocessing.y_test
+		raw_x_train = self.preprocessing.x_train
+		raw_x_test = self.preprocessing.x_test
+		
+		self.y_train = self.preprocessing.y_train
+		self.y_test = self.preprocessing.y_test
 
-      self.x_train = self.preprocessing.sequence_to_token(raw_x_train)
-      self.x_test = self.preprocessing.sequence_to_token(raw_x_test)
-      
-   def train(self):
-   
-      training_set = MyMapDataset(self.x_train, self.y_train)
-      test_set = MyMapDataset(self.x_test, self.y_test)
-      
-      loader_training = DataLoader(training_set, batch_size=self.batch_size)
-      loader_test = DataLoader(test_set)
-      
-      optimizer = optim.RMSprop(self.model.parameters(), lr=0.01)
-      
-      for epoch in range(10):
-      	
-      	accuracy = 0
-      	
-      	self.model.train()
+		self.x_train = self.preprocessing.sequence_to_token(raw_x_train)
+		self.x_test = self.preprocessing.sequence_to_token(raw_x_test)
+		
+	def train(self):
+	
+		training_set = MyMapDataset(self.x_train, self.y_train)
+		test_set = MyMapDataset(self.x_test, self.y_test)
+		
+		loader_training = DataLoader(training_set, batch_size=self.batch_size)
+		loader_test = DataLoader(test_set)
+		
+		optimizer = optim.RMSprop(self.model.parameters(), lr=0.001)
+		
+		for epoch in range(20):
+			
+			accuracy = 0
+			
+			self.model.train()
 
-      	hc = self.model.init_hidden()
-      	lote = 0
-      	
-      	for x_batch, y_batch in loader_training:
-      		
-      		
-      		x = x_batch.type(torch.FloatTensor)
-      		y = y_batch.type(torch.FloatTensor)
-      		
-      		try:
-	      	  x = x.reshape(x.shape[1], self.batch_size, 1)
-	      	except:
-	      	  break
-	      	
-	      	y_pred = self.model(x, hc)
-	      	
-	      	loss = F.binary_cross_entropy(y_pred, y)
-	      	
-	      	loss.backward()
-      		
-      		optimizer.step()
-      		
-      		optimizer.zero_grad()
-      		accuracy += torch.eq(y_pred.round(), y).float().mean()
-      		lote += 1
+			lote = 0
+			
+			hc = self.model.init_hidden()
+			for x_batch, y_batch in loader_training:
+				  
+				x = x_batch.type(torch.FloatTensor)
+				y = y_batch.type(torch.FloatTensor)
+				
+				try:
+				  x = x.reshape(x.shape[1], self.batch_size, 1)
+				except:
+				  break
+				
+				y_pred = self.model(x, hc)
+				
+				loss = F.binary_cross_entropy(y_pred, y)
+				
+				loss.backward()
+				
+				optimizer.step()
+				
+				optimizer.zero_grad()
+				accuracy += torch.eq(y_pred.round(), y).float().mean()
+				lote += 1
 
-      	accuracy = accuracy / lote
-      	print("Epoch: %d, Loss %.5f , ACC: %.5f" % (epoch+1, loss.item(), accuracy))
+			accuracy = accuracy / lote
+			print("Epoch: %d, Loss %.5f , ACC: %.5f" % (epoch+1, loss.item(), accuracy))
 
-   
+	
 if __name__ == "__main__":
-   
-   execute = Execute()
-   execute.train()
+	
+	execute = Execute()
+	execute.train()

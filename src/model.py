@@ -13,8 +13,8 @@ class TweetClassifier(nn.ModuleList):
 		
 		self.dropout = nn.Dropout(0.5)
 		self.lstm = nn.LSTM(input_size=self.input_size, hidden_size=self.hidden_dim, num_layers=self.LSTM_layers)
-		self.fc1 = nn.Linear(in_features=self.hidden_dim, out_features=258)
-		self.fc2 = nn.Linear(in_features=258, out_features=1)
+		self.fc1 = nn.Linear(in_features=self.hidden_dim, out_features=256)
+		self.fc2 = nn.Linear(in_features=256, out_features=1)
 		
 	def forward(self, x, hc):
 	
@@ -24,6 +24,7 @@ class TweetClassifier(nn.ModuleList):
 		out = torch.relu_(self.fc1(hidden))
 		out = self.dropout(out)
 		out = torch.sigmoid(self.fc2(out))
+		
 		out = out.view(self.batch_size)
 
 		return out
