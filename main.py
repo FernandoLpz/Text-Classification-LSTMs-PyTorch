@@ -18,6 +18,9 @@ from src import parameter_parser
 
 
 class DatasetMaper(Dataset):
+	'''
+	Handles batches of dataset
+	'''
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
@@ -30,6 +33,10 @@ class DatasetMaper(Dataset):
 		
 
 class Execute:
+	'''
+	Class for execution. Initializes the preprocessing as well as the 
+	Tweet Classifier model
+	'''
 
 	def __init__(self, args):
 		self.__init_data__(args)
@@ -40,7 +47,10 @@ class Execute:
 		self.model = TweetClassifier(args)
 		
 	def __init_data__(self, args):
-	
+		'''
+		Initialize preprocessing from raw dataset to dataset split into training and testing
+		Training and test datasets are index strings that refer to tokens
+		'''
 		self.preprocessing = Preprocessing(args)
 		self.preprocessing.load_data()
 		self.preprocessing.prepare_tokens()
@@ -109,11 +119,11 @@ class Execute:
 		return predictions
 			
 	@staticmethod
-	def calculate_accuray(grand_true, predictions):
+	def calculate_accuray(grand_truth, predictions):
 		true_positives = 0
 		false_positives = 0
 		
-		for true, pred in zip(grand_true, predictions):
+		for true, pred in zip(grand_truth, predictions):
 			if (pred > 0.5) and (true == 1):
 				true_positives += 1
 			elif (pred < 0.5) and (true == 0):
