@@ -86,9 +86,12 @@ class Execute:
 				optimizer.step()
 				
 				predictions += list(y_pred.squeeze().detach().numpy())
-				
+			
+			test_predictions = self.evaluation()
+			
 			train_accuary = self.calculate_accuray(self.y_train, predictions)
-			test_accuracy = self.evaluation()
+			test_accuracy = self.calculate_accuray(self.y_test, test_predictions)
+			
 			print("Epoch: %d, loss: %.5f, Train accuracy: %.5f, Test accuracy: %.5f" % (epoch+1, loss.item(), train_accuary, test_accuracy))
 			
 	def evaluation(self):
@@ -103,8 +106,7 @@ class Execute:
 				y_pred = self.model(x)
 				predictions += list(y_pred.detach().numpy())
 				
-			accuary = self.calculate_accuray(self.y_test, predictions)
-		return accuary
+		return predictions
 			
 	@staticmethod
 	def calculate_accuray(grand_true, predictions):
