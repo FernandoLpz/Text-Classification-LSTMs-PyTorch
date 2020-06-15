@@ -6,12 +6,15 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 
 from src import Preprocessing
 from src import TweetClassifier
 
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+
+from src import parameter_parser
 
 np.random.seed(12)
 
@@ -29,14 +32,15 @@ class MyMapDataset(Dataset):
 
 class Execute:
 
-	def __init__(self):
-		self.batch_size = 64
-		self.__init_data__()
-		self.model = TweetClassifier()
+	def __init__(self, args):
+		self.args = args
+		self.batch_size = args.batch_size
+		self.__init_data__(args)
+		self.model = TweetClassifier(args)
 		
-	def __init_data__(self):
+	def __init_data__(self, args):
 	
-		self.preprocessing = Preprocessing()
+		self.preprocessing = Preprocessing(args)
 		self.preprocessing.load_data()
 		self.preprocessing.prepare_tokens()
 
@@ -54,47 +58,72 @@ class Execute:
 		training_set = MyMapDataset(self.x_train, self.y_train)
 		test_set = MyMapDataset(self.x_test, self.y_test)
 		
-		loader_training = DataLoader(training_set, batch_size=self.batch_size)
-		loader_test = DataLoader(test_set)
+		self.loader_training = DataLoader(training_set, batch_size=self.batch_size)
+		self.loader_test = DataLoader(test_set)
 		
-		optimizer = optim.RMSprop(self.model.parameters(), lr=0.001)
+		# optimizer = optim.SGD(self.model.parameters(), lr=args.learning_rate)
+		optimizer = optim.RMSprop(self.model.parameters(), lr=args.learning_rate)
 		
-		for epoch in range(20):
-			
-			accuracy = 0
+		for epoch in range(args.epochs):
 			
 			self.model.train()
-
-			lote = 0
+			predictions = []
 			
-			hc = self.model.init_hidden()
-			for x_batch, y_batch in loader_training:
+			for x_batch, y_batch in self.loader_training:
+				
 				  
-				x = x_batch.type(torch.FloatTensor)
+				x = x_batch.type(torch.LongTensor)
 				y = y_batch.type(torch.FloatTensor)
 				
-				try:
-				  x = x.reshape(x.shape[1], self.batch_size, 1)
-				except:
-				  break
-				
-				y_pred = self.model(x, hc)
+				y_pred = self.model(x)
 				
 				loss = F.binary_cross_entropy(y_pred, y)
+				
+				optimizer.zero_grad()
 				
 				loss.backward()
 				
 				optimizer.step()
 				
-				optimizer.zero_grad()
-				accuracy += torch.eq(y_pred.round(), y).float().mean()
-				lote += 1
+				predictions += list(y_pred.squeeze().detach().numpy())
+				
+			train_accuary = self.calculate_accuray(self.y_train, predictions)
+			test_accuracy = self.evaluation()
+			print("Epoch: %d, loss: %.5f, Train accuracy: %.5f, Test accuracy: %.5f" % (epoch+1, loss.item(), train_accuary, test_accuracy))
+			
+	def evaluation(self):
 
-			accuracy = accuracy / lote
-			print("Epoch: %d, Loss %.5f , ACC: %.5f" % (epoch+1, loss.item(), accuracy))
-
+		predictions = []
+		self.model.eval()
+		with torch.no_grad():
+			for x_batch, y_batch in self.loader_test:
+				x = x_batch.type(torch.LongTensor)
+				y = y_batch.type(torch.FloatTensor)
+				
+				y_pred = self.model(x)
+				predictions += list(y_pred.detach().numpy())
+				
+			accuary = self.calculate_accuray(self.y_test, predictions)
+		return accuary
+			
+	@staticmethod
+	def calculate_accuray(grand_true, predictions):
+		true_positives = 0
+		false_positives = 0
+		
+		for true, pred in zip(grand_true, predictions):
+			if (pred > 0.5) and (true == 1):
+				true_positives += 1
+			elif (pred < 0.5) and (true == 0):
+				false_positives += 1
+			else:
+				pass
+				
+		return (true_positives+false_positives) / len(grand_true)
 	
 if __name__ == "__main__":
 	
-	execute = Execute()
+	args = parameter_parser()
+	
+	execute = Execute(args)
 	execute.train()

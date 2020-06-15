@@ -9,11 +9,11 @@ from sklearn.model_selection import train_test_split
 
 class Preprocessing:
 	
-	def __init__(self):
-		self.max_len = 30
-		self.max_words = 500
+	def __init__(self, args):
+		self.max_len = 20
+		self.max_words = 1000
 		self.data = 'data/train.csv'
-		self.test_size = 0.15
+		self.test_size = args.test_size
 		
 	def load_data(self):
 		df = pd.read_csv(self.data)
