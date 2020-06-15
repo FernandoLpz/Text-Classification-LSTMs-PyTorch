@@ -6,13 +6,14 @@ class TweetClassifier(nn.ModuleList):
 
 	def __init__(self, args):
 		super(TweetClassifier, self).__init__()
+		
 		self.batch_size = args.batch_size
 		self.hidden_dim = args.hidden_dim
 		self.LSTM_layers = args.lstm_layers
-		self.input_size = 1 # in case of embeddings, it would be 300
+		self.input_size = args.max_words # in case of embeddings, it would be 300
 		
 		self.dropout = nn.Dropout(0.5)
-		self.embedding = nn.Embedding(1000, self.hidden_dim, padding_idx=0)
+		self.embedding = nn.Embedding(self.input_size, self.hidden_dim, padding_idx=0)
 		self.lstm = nn.LSTM(input_size=self.hidden_dim, hidden_size=self.hidden_dim, num_layers=self.LSTM_layers, batch_first=True)
 		self.fc1 = nn.Linear(in_features=self.hidden_dim, out_features=257)
 		self.fc2 = nn.Linear(257, 1)

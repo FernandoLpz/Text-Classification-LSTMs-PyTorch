@@ -1,6 +1,7 @@
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 from keras.preprocessing import sequence
 from keras.preprocessing.text import Tokenizer
 
@@ -10,9 +11,9 @@ from sklearn.model_selection import train_test_split
 class Preprocessing:
 	
 	def __init__(self, args):
-		self.max_len = 20
-		self.max_words = 1000
 		self.data = 'data/train.csv'
+		self.max_len = args.max_len
+		self.max_words = args.max_words
 		self.test_size = args.test_size
 		
 	def load_data(self):
@@ -24,13 +25,9 @@ class Preprocessing:
 		
 		self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(X, Y, test_size=self.test_size)
 		
-		pass
-		
 	def prepare_tokens(self):
 		self.tokens = Tokenizer(num_words=self.max_words)
 		self.tokens.fit_on_texts(self.x_train)
-		
-		pass
 
 	def sequence_to_token(self, x):
 		sequences = self.tokens.texts_to_sequences(x)

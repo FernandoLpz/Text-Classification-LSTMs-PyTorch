@@ -39,5 +39,16 @@ def parameter_parser():
 								type = float,
 								default = 0.10,
 						 help = "Size of test dataset. Default is 10%.")
-	 
+						 
+	 parser.add_argument("--max_len",
+								dest = "max_len",
+								type = int,
+								default = 20,
+						 help = "Maximum sequence length per tweet")
+						 
+	 parser.add_argument("--max_words",
+								dest = "max_words",
+								type = float,
+								default = 1000,
+						 help = "Maximum number of words in the dictionary")					 
 	 return parser.parse_args()

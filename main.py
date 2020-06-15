@@ -16,9 +16,8 @@ from torch.utils.data import DataLoader
 
 from src import parameter_parser
 
-np.random.seed(12)
 
-class MyMapDataset(Dataset):
+class DatasetMaper(Dataset):
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
@@ -33,9 +32,11 @@ class MyMapDataset(Dataset):
 class Execute:
 
 	def __init__(self, args):
+		self.__init_data__(args)
+		
 		self.args = args
 		self.batch_size = args.batch_size
-		self.__init_data__(args)
+		
 		self.model = TweetClassifier(args)
 		
 	def __init_data__(self, args):
@@ -55,23 +56,22 @@ class Execute:
 		
 	def train(self):
 	
-		training_set = MyMapDataset(self.x_train, self.y_train)
-		test_set = MyMapDataset(self.x_test, self.y_test)
+		training_set = DatasetMaper(self.x_train, self.y_train)
+		test_set = DatasetMaper(self.x_test, self.y_test)
 		
 		self.loader_training = DataLoader(training_set, batch_size=self.batch_size)
 		self.loader_test = DataLoader(test_set)
 		
-		# optimizer = optim.SGD(self.model.parameters(), lr=args.learning_rate)
 		optimizer = optim.RMSprop(self.model.parameters(), lr=args.learning_rate)
 		
 		for epoch in range(args.epochs):
 			
-			self.model.train()
 			predictions = []
+			
+			self.model.train()
 			
 			for x_batch, y_batch in self.loader_training:
 				
-				  
 				x = x_batch.type(torch.LongTensor)
 				y = y_batch.type(torch.FloatTensor)
 				
@@ -124,6 +124,7 @@ class Execute:
 		return (true_positives+false_positives) / len(grand_true)
 	
 if __name__ == "__main__":
+	np.random.seed(12)
 	
 	args = parameter_parser()
 	
