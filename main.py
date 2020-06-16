@@ -131,7 +131,7 @@ class Execute:
 			else:
 				pass
 				
-		return (true_positives+false_positives) / len(grand_true)
+		return (true_positives+false_positives) / len(grand_truth)
 	
 if __name__ == "__main__":
 	np.random.seed(12)
