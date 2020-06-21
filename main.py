@@ -65,8 +65,6 @@ class Execute:
 		self.x_test = self.preprocessing.sequence_to_token(raw_x_test)
 		
 	def train(self):
-	
-		# torch.random.manual_seed(42)
 		
 		training_set = DatasetMaper(self.x_train, self.y_train)
 		test_set = DatasetMaper(self.x_test, self.y_test)
@@ -135,7 +133,6 @@ class Execute:
 		return (true_positives+false_positives) / len(grand_truth)
 	
 if __name__ == "__main__":
-	np.random.seed(12)
 	
 	args = parameter_parser()
 	

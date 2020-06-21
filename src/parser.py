@@ -7,7 +7,7 @@ def parameter_parser():
 	 parser.add_argument("--epochs",
 								dest = "epochs",
 								type = int,
-								default = 500,
+								default = 10,
 						 help = "Number of gradient descent iterations. Default is 200.")
 
 	 parser.add_argument("--learning_rate",
@@ -25,7 +25,7 @@ def parameter_parser():
 	 parser.add_argument("--lstm_layers",
 								dest = "lstm_layers",
 								type = int,
-								default = 64,
+								default = 2,
 					 help = "Number of LSTM layers")
 					 
 	 parser.add_argument("--batch_size",
@@ -37,7 +37,7 @@ def parameter_parser():
 	 parser.add_argument("--test_size",
 								dest = "test_size",
 								type = float,
-								default = 0.10,
+								default = 0.20,
 						 help = "Size of test dataset. Default is 10%.")
 						 
 	 parser.add_argument("--max_len",
