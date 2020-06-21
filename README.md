@@ -16,6 +16,9 @@ This raw dataset can be found in ``data/tweets.csv``.
 
 ## 2. The model
 As it was already commented, the aim of this repository is to provide a base line model for text classfication. In this sense, the model is based on a two-stacked LSTM layers followed by two linear layers. The dataset is preprocessed through a tokens-based technique, then tokens are associated to an embedding layer. The following image describes the pipeline of the model.
+<p align="center">
+<img src='img/model_architecture.png'>
+</p>
 
 ## 3. Install dependencies
 Working on
