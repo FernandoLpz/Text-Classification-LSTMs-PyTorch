@@ -69,4 +69,4 @@ So the learning curves will look like:
 ## 6. Future work
 As it was mentioned, the aim of this repository is to provdie a base line for the text classification task. It's important to mention that, the problem of text classifications goes beyond than a two-stacked LSTM architecture where texts are preprocessed under tokens-based methodology. Recent works have shown impressive results by implemeting transformers based architectures (e.g. <a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/"> BERT</a>). Nevertheless, by following this thread, this proposed model can be improved by removing the tokens-based methodology and implementing a word embeddings based model instead (e.g. <a href="https://radimrehurek.com/gensim/models/word2vec.html">word2vec-gensim</a>). Likewise, bi-directional LSTMs can be applied in order to catch more context (in a forward and backward way). 
 
-<i>The question remains open: how to learn semantics? what is semantics? would DL-based are capable to learn semantics?</i>
+<i>The question remains open: how to learn semantics? what is semantics? would DL-based models be capable to learn semantics?</i>

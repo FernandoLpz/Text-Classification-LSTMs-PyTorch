@@ -10,7 +10,7 @@ class TweetClassifier(nn.ModuleList):
 		self.batch_size = args.batch_size
 		self.hidden_dim = args.hidden_dim
 		self.LSTM_layers = args.lstm_layers
-		self.input_size = args.max_words # in case of embeddings, it would be 300
+		self.input_size = args.max_words # embedding dimention
 		
 		self.dropout = nn.Dropout(0.5)
 		self.embedding = nn.Embedding(self.input_size, self.hidden_dim, padding_idx=0)
