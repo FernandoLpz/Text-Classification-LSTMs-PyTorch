@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 class Preprocessing:
 	
 	def __init__(self, args):
-		self.data = 'data/train.csv'
+		self.data = 'data/tweets.csv'
 		self.max_len = args.max_len
 		self.max_words = args.max_words
 		self.test_size = args.test_size

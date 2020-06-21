@@ -16,3 +16,18 @@ This dataset can be found in ``data/tweets.csv``.
 
 ## 2. The model
 As it was already commented, the aim of this repository is to provide a base line model for text classfication. In this sense, the model is based on a two-stacked LSTM layers followed by two linear layers. The dataset is preprocessed through a tokens-based technique, then tokens are associated to an embedding layer. The following image describes the pipeline of the model.
+
+## 3. Install dependencies
+Working on
+
+## 4. How to use it
+```
+python -B main.py
+```
+You can define some hyperparameters manually, such as:
+```
+ main.py [-h] [--epochs EPOCHS] [--learning_rate LEARNING_RATE]
+         [--hidden_dim HIDDEN_DIM] [--lstm_layers LSTM_LAYERS]
+         [--batch_size BATCH_SIZE] [--test_size TEST_SIZE]
+         [--max_len MAX_LEN] [--max_words MAX_WORDS]
+```

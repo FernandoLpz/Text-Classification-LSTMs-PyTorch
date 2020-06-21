@@ -66,6 +66,8 @@ class Execute:
 		
 	def train(self):
 	
+		# torch.random.manual_seed(42)
+		
 		training_set = DatasetMaper(self.x_train, self.y_train)
 		test_set = DatasetMaper(self.x_test, self.y_test)
 		
@@ -73,7 +75,6 @@ class Execute:
 		self.loader_test = DataLoader(test_set)
 		
 		optimizer = optim.RMSprop(self.model.parameters(), lr=args.learning_rate)
-		
 		for epoch in range(args.epochs):
 			
 			predictions = []
