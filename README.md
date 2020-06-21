@@ -1,6 +1,6 @@
-# Text Classification through a LSTM-based model
+# Text Classification through a LSTMs based model
 
-The aim of this repository is to show a baseline model for text classification by implementing a LSTM-based model coded in PyTorch. In order to provide a better understanding of the model, it will be used a dataset of Tweets provided by Kaggle. 
+The aim of this repository is to show a baseline model for text classification by implementing a LSTM-based model coded in PyTorch. In order to provide a better understanding of the model, it will be used a Tweets dataset provided by <a href="https://www.kaggle.com/c/nlp-getting-started">Kaggle</a>
 
 ## 1. Data
 As it was mentioned above, the implemented dataset is about Tweets regarding fake news. The ``raw``dataset contains some unnecessary columns which are going to be removed in the preprocessing step, in the end, we will be working with a dataset with a head such as this: 
@@ -20,9 +20,16 @@ As it was already commented, the aim of this repository is to provide a base lin
 <img src='img/model_architecture.png'>
 </p>
 
-## 3. Install dependencies
-Working on
-
+## 3. Dependencies
+This model was developed under these specified versions:
+```
+torch==1.0.1.post2
+torchtext==0.6.0
+tensorflow==1.12.0
+Keras==2.0.0
+numpy==1.15.4
+pandas==1.0.3
+```
 ## 4. How to use it
 The model can be executed easily by typing:
 ```
@@ -58,3 +65,8 @@ So the learning curves will look like:
 <p align="center">
 <img src='img/performance.svg'>
 </p>
+
+## 6. Future work
+As it was mentioned, the aim of this repository is to provdie a base line for the text classification task. It's important to mention that, the problem of text classifications goes beyond than a two-stacked LSTM architecture where texts are preprocessed under tokens-based methodology. Recent works have shown impressive results by implemeting transformers based architectures (e.g. <a href="https://jalammar.github.io/a-visual-guide-to-using-bert-for-the-first-time/"> BERT</a>). Nevertheless, by following this thread, this proposed model can be improved by removing the tokens-based methodology and implementing a word embeddings based model instead (e.g. <a href="https://radimrehurek.com/gensim/models/word2vec.html">word2vec-gensim</a>). Likewise, bi-directional LSTMs can be applied in order to catch more context (in a forward and backward way). 
+
+<i>The question remains open: how to learn semantics? what is semantics? would DL-based are capable to learn semantics?</i>
