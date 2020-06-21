@@ -51,3 +51,7 @@ Epoch: 8, loss: 0.00315, Train accuracy: 0.89704, Test accuracy: 0.74787
 Epoch: 9, loss: 0.02075, Train accuracy: 0.91018, Test accuracy: 0.76428
 Epoch: 10, loss: 0.01348, Train accuracy: 0.92808, Test accuracy: 0.75378
 ```
+So the learning curves will look like:
+<p align="center">
+<img src='img/performance.svg'>
+</p>
