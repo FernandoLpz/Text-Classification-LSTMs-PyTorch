@@ -1,4 +1,4 @@
-# Text Classification through a LSTMs based model
+# Text Classification through LSTMs
 
 The aim of this repository is to show a baseline model for text classification by implementing a LSTM-based model coded in PyTorch. In order to provide a better understanding of the model, it will be used a Tweets dataset provided by <a href="https://www.kaggle.com/c/nlp-getting-started">Kaggle</a>
 
