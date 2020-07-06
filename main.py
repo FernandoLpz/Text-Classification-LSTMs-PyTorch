@@ -120,17 +120,17 @@ class Execute:
 	@staticmethod
 	def calculate_accuray(grand_truth, predictions):
 		true_positives = 0
-		false_positives = 0
+		true_negatives = 0
 		
 		for true, pred in zip(grand_truth, predictions):
 			if (pred > 0.5) and (true == 1):
 				true_positives += 1
 			elif (pred < 0.5) and (true == 0):
-				false_positives += 1
+				true_negatives += 1
 			else:
 				pass
 				
-		return (true_positives+false_positives) / len(grand_truth)
+		return (true_positives+true_negatives) / len(grand_truth)
 	
 if __name__ == "__main__":
 	
