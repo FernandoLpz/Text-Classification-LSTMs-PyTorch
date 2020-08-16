@@ -2,6 +2,9 @@
 
 The aim of this repository is to show a baseline model for text classification by implementing a LSTM-based model coded in PyTorch. In order to provide a better understanding of the model, it will be used a Tweets dataset provided by <a href="https://www.kaggle.com/c/nlp-getting-started">Kaggle</a>
 
+If you want to delve into the details regarding how the text was pre-processed, how the sequences were generated, how the neural network was built from the LSTMCells and how the model was trained, I highly recommend reading the blog:
+<a href="https://towardsdatascience.com/text-classification-with-pytorch-7111dae111a6">Text Classification with PyTorch</a>
+
 ## 1. Data
 As it was mentioned above, the implemented dataset is about Tweets regarding fake news. The ``raw``dataset contains some unnecessary columns which are going to be removed in the preprocessing step, in the end, we will be working with a dataset with a head such as this: 
 
