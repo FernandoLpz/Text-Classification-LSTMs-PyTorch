@@ -1,6 +1,6 @@
 torch==1.0.1.post2
 torchtext==0.6.0
-tensorflow==2.5.3
+tensorflow==2.11.1
 Keras==2.0.0
 numpy==1.15.4
 pandas==1.0.3
